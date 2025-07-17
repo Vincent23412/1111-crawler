@@ -1672,19 +1672,19 @@ if __name__ == "__main__":
     scraper = JobScraper()
     
     # # Step 1: Generate and save the summary count table (metadata summary)
-    # logging.info("Generating summary count table from API metadata...")
+    logging.info("Generating summary count table from API metadata...")
     metadata_summary_df = scraper.generate_metadata_summary()
-    # logging.info("Metadata summary table generated and saved.")
+    logging.info("Metadata summary table generated and saved.")
 
     # # Optional: Ask the user if detailed extraction should be run.
-    # # proceed = input("Do you want to proceed with the detailed extraction process? (y/n): ").strip().lower()
+    # proceed = input("Do you want to proceed with the detailed extraction process? (y/n): ").strip().lower()
     
 
     # #Step 2: Run the detailed extraction process.
-    # logging.info("Starting detailed extraction process...")
-    # scraper.run()
+    logging.info("Starting detailed extraction process...")
+    scraper.run()
     
     # # Step 3: Generate and save the extraction summary based on detailed extraction
-    # logging.info("Generating extraction summary from detailed extraction counts...")
-    # extraction_summary_df = scraper.generate_extraction_summary()
-    # logging.info("Extraction summary generated and saved.")
+    logging.info("Generating extraction summary from detailed extraction counts...")
+    extraction_summary_df = scraper.generate_extraction_summary()
+    logging.info("Extraction summary generated and saved.")
