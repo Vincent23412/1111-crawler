@@ -25,40 +25,6 @@ def sanitize_filename(s):
 # 此程式為為抓取新竹縣市104職缺, 此縣有1超額職類 (over 150 pages), 會用另外程式抓取, 之後需合併
 # 每月抓取時記得更改以下路徑到指定年月的檔案夾 ... /03_2025/, 第27行, 第914行 
 # 取得目前這個 Python 檔案的所在目錄
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# base_dir = os.path.join(current_dir, "Nantou")
-base_dir = current_dir
-
-os.makedirs(base_dir, exist_ok=True)
-
-# Optionally, create a logs subdirectory within base_dir:
-log_dir = os.path.join(base_dir, "logs")
-os.makedirs(log_dir, exist_ok=True)
-
-# Construct the log filename with a full path:
-log_filename = os.path.join(log_dir, f'scraper_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_filename, encoding="utf-8"),
-        logging.StreamHandler()
-    ]
-)
-
-logging.info("Logging is configured. Log file saved to: " + log_filename)
-
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(f'scraper_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log', encoding="utf-8"),
-        logging.StreamHandler()
-    ]
-)
 
 class JobScraper:
     def __init__(self):
@@ -68,19 +34,37 @@ class JobScraper:
             # "台中市": "6001008000",
             # "台南市": "6001014000",
             # "桃園市": "6001005000",
-            # "高雄市": "6001016000",
-            "新竹縣市": "6001006000",
+            "高雄市": "6001016000",
+            # "新竹縣市": "6001006000",
             # "彰化縣": "6001010000",
             # "雲林縣": "6001012000",
             # "屏東縣": "6001018000"
             # "南投縣": "6001011000"
+            # "嘉義縣": "6001013000"
          }
 
+
+        self.city_names = "Kaohsiung"
+        # {
+        #     "台北市": "Taipei",
+        #     "新北市": "New_Taipei",
+        #     "台中市": "Taichung",
+        #     "台南市": "Tainan",
+        #     "桃園市": "Taoyuan",
+            
+        #     "新竹縣市": "Hsinchu",
+        #     "彰化縣": "Changhua",
+        #     "雲林縣": "Yunlin",
+        #     "屏東縣": "Pingtung",
+        #     "南投縣": "Nantou",
+        #     "嘉義縣": "Chiayi"
+        # }
+
         self.job_codes = {
-            "儲備幹部": "2001001002",
-            "經營管理主管": "2001001001",
-            "主管特別助理": "2001001003",
-            "副總經理": "2001001004",
+            # "儲備幹部": "2001001002",
+            # "經營管理主管": "2001001001",
+            # "主管特別助理": "2001001003",
+            # "副總經理": "2001001004",
             "總經理": "2001001005",
             "執行長": "2001001006",
             "營運長": "2001001007",
@@ -1268,6 +1252,42 @@ class JobScraper:
         self._init_headers()
         self.base_wait_time = 6
         
+        self.current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # base_dir = os.path.join(current_dir, "Nantou")
+        self.base_dir = os.path.join(self.current_dir, self.city_names)
+
+        os.makedirs(self.base_dir, exist_ok=True)
+
+        # Optionally, create a logs subdirectory within base_dir:
+        self.log_dir = os.path.join(self.base_dir, "logs")
+        os.makedirs(self.log_dir, exist_ok=True)
+
+        # Construct the log filename with a full path:
+        self.log_filename = os.path.join(self.log_dir, f'scraper_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
+
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler(self.log_filename, encoding="utf-8"),
+                logging.StreamHandler()
+            ]
+        )
+
+        logging.info("Logging is configured. Log file saved to: " + self.log_filename)
+
+
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler(f'scraper_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log', encoding="utf-8"),
+                logging.StreamHandler()
+            ]
+        )
+
+
     def _init_headers(self):
         self.headers = {
             'Accept': 'application/json, text/javascript, */*; q=0.01',
@@ -1291,12 +1311,12 @@ class JobScraper:
 
     def _get_finish_list(self):
         # print("Fetching job titles from CSV files...")
-        folder_path = "Nantou"
+        folder_path = self.city_names
         job_titles = []  
 
         for filename in os.listdir(folder_path):
             # print(filename)
-            if filename.startswith("jobs_南投縣_") and filename.endswith(".csv"):
+            if filename.startswith(f"jobs_{self.city_names}_") and filename.endswith(".csv"):
                 parts = filename.split("_")
                 if len(parts) >= 5:
                     # 把 parts[2:-2] 合併回職稱（以防職稱中也有底線）
@@ -1529,15 +1549,15 @@ class JobScraper:
         
             # Ensure the directory exists (change to your path)
             # base_dir = "C:/Users/whcnt/OneDrive/RA2024/104_JobData_new/06_2025/抓取原檔_縣市/Hsinchu"
-            os.makedirs(base_dir, exist_ok=True)
+            # TODO
+            # os.makedirs(self.base_dir, self.city_names, exist_ok=True)
 
             # Sanitize the city and job names
             safe_city_name = sanitize_filename(city_name)
             safe_job_name = sanitize_filename(job_name)
-        
             # Construct the file name using sanitized strings
             filename = f'jobs_{safe_city_name}_{safe_job_name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
-            file_path = os.path.join(base_dir, filename)
+            file_path = os.path.join(self.base_dir, filename)
         
             # Construct full file path (original)
             #filename = f'jobs_{city_name}_{job_name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
@@ -1545,6 +1565,9 @@ class JobScraper:
 
             # Convert job list to DataFrame and save as CSV
             df = pd.DataFrame(jobs)
+
+            print(file_path)
+
             df.to_csv(file_path, index=False, encoding='utf-8-sig')
 
             logging.info(f"Saved {len(jobs)} jobs in {city_name} to file: {file_path}")
@@ -1602,7 +1625,7 @@ class JobScraper:
         df_meta = pd.DataFrame(summary).T  # transpose to get job categories as rows
         # Save the metadata summary to CSV.
         meta_filename = f'metadata_summary_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
-        meta_filepath = os.path.join(base_dir, meta_filename)
+        meta_filepath = os.path.join(self.base_dir, meta_filename)
         df_meta.to_csv(meta_filepath, encoding='utf-8-sig')
         logging.info(f"Metadata summary saved to {meta_filepath}")
         return df_meta
@@ -1627,7 +1650,7 @@ class JobScraper:
 
         # Save the extraction summary to CSV using self.base_dir if available.
         extract_filename = f'extraction_summary_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
-        extract_filepath = os.path.join(base_dir, extract_filename)
+        extract_filepath = os.path.join(self.base_dir, extract_filename)
         df_extract.to_csv(extract_filepath, encoding='utf-8-sig')
         
         #extract_filename = f'extraction_summary_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
@@ -1686,5 +1709,5 @@ if __name__ == "__main__":
     
     # # Step 3: Generate and save the extraction summary based on detailed extraction
     logging.info("Generating extraction summary from detailed extraction counts...")
-    extraction_summary_df = scraper.generate_extraction_summary()
+    # extraction_summary_df = scraper.generate_extraction_summary()
     logging.info("Extraction summary generated and saved.")
